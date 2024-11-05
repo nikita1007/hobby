@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('ref_rooms_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->constrained('ref_rooms');
-            $table->foreignId('image_id')->constrained('ref_images');
+            $table->foreignId('room_id')->constrained('hotel_rooms');
+            $table->foreignId('image_id')->constrained('images');
             $table->integer('order')->default(0);
         });
     }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('room_id')->constrained('rooms');
+            $table->foreignId('room_id')->constrained('hotel_rooms');
             $table->date('ckeck_in');
             $table->date('ckeck_out');
             $table->enum('status', ['accepted', 'declined'])->default('accepted');
