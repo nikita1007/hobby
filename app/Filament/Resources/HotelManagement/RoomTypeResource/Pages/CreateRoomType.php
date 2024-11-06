@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\RoomTypeResource\Pages;
+namespace App\Filament\Resources\HotelManagement\RoomTypeResource\Pages;
 
-use App\Filament\Resources\RoomTypeResource;
-use Filament\Actions;
+use App\Filament\Resources\HotelManagement\RoomTypeResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateRoomType extends CreateRecord

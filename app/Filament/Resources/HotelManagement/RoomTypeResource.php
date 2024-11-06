@@ -1,40 +1,36 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\HotelManagement;
 
-use App\Filament\Resources\HotelResource\Pages;
-use App\Filament\Resources\HotelResource\RelationManagers;
-use App\Models\Hotel;
+use App\Filament\Resources\HotelManagement;
+use App\Filament\Resources\RoomTypeResource\Pages;
+use App\Filament\Resources\RoomTypeResource\RelationManagers;
+use App\Models\RoomType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class HotelResource extends Resource
+class RoomTypeResource extends Resource
 {
-    protected static ?string $model = Hotel::class;
+    protected static ?string $model = RoomType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
+
+    protected static ?string $pluralModelLabel = 'Типы комнат';
+
+    protected static ?string $navigationGroup = 'Управление отелями';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('city_id')
-                    ->relationship('city', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('type')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('stars')
-                    ->required()
-                    ->numeric(),
             ]);
     }
 
@@ -42,14 +38,8 @@ class HotelResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('city.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('type')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('stars')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -59,6 +49,12 @@ class HotelResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading(
+                fn() => ! request()->has('tableSearch')
+                    ? __('messages.filament.table.no_records', ['resource' => 'типов комнат'])
+                    : __('messages.filament.table.no_search_results')
+            )
+            ->emptyStateIcon('heroicon-o-plus')
             ->filters([
                 //
             ])
@@ -82,9 +78,9 @@ class HotelResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListHotels::route('/'),
-            'create' => Pages\CreateHotel::route('/create'),
-            'edit' => Pages\EditHotel::route('/{record}/edit'),
+            'index' => HotelManagement\RoomTypeResource\Pages\ListRoomTypes::route('/'),
+            'create' => HotelManagement\RoomTypeResource\Pages\CreateRoomType::route('/create'),
+            'edit' => HotelManagement\RoomTypeResource\Pages\EditRoomType::route('/{record}/edit'),
         ];
     }
 }

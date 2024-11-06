@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\HotelResource\Pages;
+namespace App\Filament\Resources\HotelManagement\HotelResource\Pages;
 
-use App\Filament\Resources\HotelResource;
+use App\Filament\Resources\HotelManagement\HotelResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

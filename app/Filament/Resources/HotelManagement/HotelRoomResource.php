@@ -1,23 +1,28 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\HotelManagement;
 
 use App\Filament\Resources\HotelRoomResource\Pages;
 use App\Filament\Resources\HotelRoomResource\RelationManagers;
+use App\Filament\Resources\HotelManagement;
 use App\Models\HotelRoom;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HotelRoomResource extends Resource
 {
     protected static ?string $model = HotelRoom::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+
+    protected static ?string $pluralModelLabel = 'Комнаты';
+
+    protected static ?string $navigationGroup = 'Управление отелями';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -70,6 +75,12 @@ class HotelRoomResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading(
+                fn() => ! request()->has('tableSearch')
+                    ? __('messages.filament.table.no_records', ['resource' => 'комнат отелей'])
+                    : __('messages.filament.table.no_search_results')
+            )
+            ->emptyStateIcon('heroicon-o-plus')
             ->filters([
                 //
             ])
@@ -93,9 +104,9 @@ class HotelRoomResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListHotelRooms::route('/'),
-            'create' => Pages\CreateHotelRoom::route('/create'),
-            'edit' => Pages\EditHotelRoom::route('/{record}/edit'),
+            'index' => HotelManagement\HotelRoomResource\Pages\ListHotelRooms::route('/'),
+            'create' => HotelManagement\HotelRoomResource\Pages\CreateHotelRoom::route('/create'),
+            'edit' => HotelManagement\HotelRoomResource\Pages\EditHotelRoom::route('/{record}/edit'),
         ];
     }
 }
