@@ -2,32 +2,50 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CityResource\Pages;
-use App\Filament\Resources\CityResource\RelationManagers;
 use App\Models\City;
-use Filament\Forms;
+use App\Filament\Resources\CityResource\Pages;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class CityResource extends Resource
 {
     protected static ?string $model = City::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
+
+    protected static ?string $pluralModelLabel = 'Города';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->label('Название города')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
+                    ->maxLength(255)
+                    ->reactive(),
+
+                TextInput::make('slug')
+                    ->label('Краткое обозначение')
                     ->required()
+                    ->suffixAction(
+                        Actions\Action::make('generateSlug')
+                            ->label("Сгенерировать Slug")
+                            ->icon('heroicon-o-arrow-path')
+                            ->action(function (Forms\Set $set, Forms\Get $get) {
+                                $set('slug', Str::slug($get('name')));
+                            })
+                            ->disabled(fn(Forms\Get $get) => empty($get('name')))
+                    )
+                    ->reactive()
                     ->maxLength(255),
             ]);
     }
@@ -37,9 +55,14 @@ class CityResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Название города')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Краткое обозначение')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -49,6 +72,12 @@ class CityResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading(
+                fn() => ! request()->has('tableSearch')
+                    ? __('messages.filament.table.no_records', ['resource' => 'городов'])
+                    : __('messages.filament.table.no_search_results')
+            )
+            ->emptyStateIcon('heroicon-o-globe-alt')
             ->filters([
                 //
             ])
