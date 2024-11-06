@@ -1,23 +1,28 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\UserManagement;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\UserManagement;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+
+    protected static ?string $pluralModelLabel = 'Пользователи';
+
+    protected static ?string $navigationGroup = 'Управление пользователями';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -73,6 +78,12 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading(
+                fn() => ! request()->has('tableSearch')
+                    ? __('messages.filament.table.no_records', ['resource' => 'пользователей'])
+                    : __('messages.filament.table.no_search_results')
+            )
+            ->emptyStateIcon('heroicon-o-user-plus')
             ->filters([
                 //
             ])
@@ -96,9 +107,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => UserManagement\UserResource\Pages\ListUsers::route('/'),
+            'create' => UserManagement\UserResource\Pages\CreateUser::route('/create'),
+            'edit' => UserManagement\UserResource\Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }
