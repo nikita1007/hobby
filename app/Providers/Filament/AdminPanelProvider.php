@@ -30,7 +30,10 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverResources(in: app_path('Filament/Resources/UserManagement'), for: 'App\\Filament\\Resources\\UserManagement')
+            ->discoverResources(in: app_path('Filament/Resources/HotelManagement'), for: 'App\\Filament\\Resources\\HotelManagement')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
