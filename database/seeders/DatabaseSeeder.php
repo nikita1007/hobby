@@ -20,5 +20,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'password' => 'qwerty',
         ]);
+
+        $this->call(CitySeeder::class);
+        $this->call(HotelSeeder::class);
     }
 }
