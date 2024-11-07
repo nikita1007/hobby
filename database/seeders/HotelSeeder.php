@@ -22,14 +22,26 @@ class HotelSeeder extends Seeder
             ],
             [
                 'city_id' => '1',
-                'name' => 'METROPOL',
-                'description' => 'METROPOL',
+                'name' => 'METROPOL Orenburg',
+                'description' => 'METROPOL Orenburg',
+                'stars' => '5',
+            ],
+            [
+                'city_id' => '2',
+                'name' => 'METROPOL Moscow',
+                'description' => 'METROPOL Moscow',
+                'stars' => '5',
+            ],
+            [
+                'city_id' => '2',
+                'name' => 'METROPOL Arbat Moscow',
+                'description' => 'METROPOL Arbat Moscow',
                 'stars' => '5',
             ],
             [
                 'city_id' => '1',
-                'name' => 'Test 1',
-                'description' => 'Test 1',
+                'name' => 'Orenburg Test 1',
+                'description' => 'Orenburg Test 1',
                 'stars' => '3',
             ],
         ];
