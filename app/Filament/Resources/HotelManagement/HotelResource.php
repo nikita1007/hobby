@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\HotelManagement;
 
 use App\Filament\Exports\HotelExporter;
-use App\Filament\Resources\HotelResource\Pages;
-use App\Filament\Resources\HotelResource\RelationManagers;
 use App\Filament\Resources\HotelManagement;
+use App\Models\City;
 use App\Models\Hotel;
+use Exception;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Artisan;
 
 class HotelResource extends Resource
 {
@@ -49,6 +51,9 @@ class HotelResource extends Resource
             ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -64,8 +69,7 @@ class HotelResource extends Resource
                 Tables\Columns\TextColumn::make('stars')
                     ->label('Количетсво звезд')
                     ->numeric()
-                    ->sortable()
-                    ->extraAttributes(['style' => 'text-align: right;']),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -82,19 +86,48 @@ class HotelResource extends Resource
             )
             ->emptyStateIcon('heroicon-o-plus')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('city_id')
+                    ->multiple()
+                    ->label('Город')
+                    ->options(function () {
+                        return City::all()->pluck('name', 'id');
+                    })
+                    ->query(function ($query, $data) {
+                        if (!empty($data['values'])) {
+                            return $query->whereIn('city_id', $data['values']);
+                        }
+                        return $query;
+                    }),
             ])
             ->actions([
                 EditAction::make(),
             ])
             ->headerActions([
-                ExportAction::make()->exporter(HotelExporter::class),
+                ExportAction::make()->exporter(HotelExporter::class)
+                    ->after(function () {
+                        // Запуск очереди с автоостановкой после выполнения всех задач
+                        Artisan::call('queue:work', [
+                            '--stop-when-empty' => true,
+                        ]);
+                    })
+                    ->formats([
+                        ExportFormat::Csv,
+                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    ExportAction::make()->exporter(HotelExporter::class),
                 ]),
+                Tables\Actions\ExportBulkAction::make()->exporter(HotelExporter::class)
+                    ->after(function () {
+                        // Запуск очереди с автоостановкой после выполнения всех задач
+                        Artisan::call('queue:work', [
+                            '--stop-when-empty' => true,
+                        ]);
+                    })
+                    ->formats([
+                        ExportFormat::Csv,
+                    ]),
             ]);
     }
 
